@@ -59,6 +59,7 @@ public class MarkovAlgorithm {
     private static String applyRules(String input, List<Rule> rules) {
         String current = input;
         boolean changed;
+        final int MAX_STRING_LENGTH = 32768;
         
         do {
             changed = false;
@@ -66,6 +67,10 @@ public class MarkovAlgorithm {
                 if (current.contains(rule.left)) {
                     String newString = current.replaceFirst(Pattern.quote(rule.left), rule.right);
                     if (!newString.equals(current)) {
+                        // Check if the new string would exceed the maximum length
+                        if (newString.length() > MAX_STRING_LENGTH) {
+                            return current;
+                        }
                         current = newString;
                         changed = true;
                         if (rule.right.contains(".")) {
