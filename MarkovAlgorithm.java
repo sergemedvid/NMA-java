@@ -71,7 +71,14 @@ public class MarkovAlgorithm {
             changed = false;
             for (Rule rule : rules) {
                 if (current.contains(rule.left)) {
-                    String newString = current.replaceFirst(Pattern.quote(rule.left), rule.right);
+                    // Check if the rule has a termination marker
+                    boolean shouldTerminate = rule.right.contains(".");
+                    // If there's a termination marker, remove it for the replacement
+                    String replacementString = shouldTerminate 
+                            ? rule.right.replace(".", "") 
+                            : rule.right;
+                            
+                    String newString = current.replaceFirst(Pattern.quote(rule.left), replacementString);
                     if (!newString.equals(current)) {
                         // Check if the new string would exceed the maximum length
                         if (newString.length() > MAX_STRING_LENGTH) {
@@ -85,7 +92,7 @@ public class MarkovAlgorithm {
                             System.out.println("Result: " + current);
                         }
                         
-                        if (rule.right.contains(".")) {
+                        if (shouldTerminate) {
                             return current;
                         }
                         break;
