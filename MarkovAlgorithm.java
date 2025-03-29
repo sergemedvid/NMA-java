@@ -45,7 +45,9 @@ public class MarkovAlgorithm {
         for (String ruleString : ruleStrings) {
             if (ruleString.trim().isEmpty()) continue;
             
-            String[] parts = ruleString.split("\t");
+            // Split by tabs while preserving empty fields
+            String[] parts = ruleString.split("\t", -1);
+            
             if (parts.length >= 2) {
                 String left = parts[0];
                 String right = parts[1];
