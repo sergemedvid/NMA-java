@@ -56,10 +56,14 @@ public class MarkovAlgorithm {
         return rules;
     }
 
-    private static String applyRules(String input, List<Rule> rules) {
+    private static String applyRules(String input, List<Rule> rules, boolean verbose) {
         String current = input;
         boolean changed;
         final int MAX_STRING_LENGTH = 32768;
+        
+        if (verbose) {
+            System.out.println("Initial: " + current);
+        }
         
         do {
             changed = false;
@@ -73,6 +77,12 @@ public class MarkovAlgorithm {
                         }
                         current = newString;
                         changed = true;
+                        
+                        if (verbose) {
+                            System.out.println("Applied rule: " + rule.left + " -> " + rule.right);
+                            System.out.println("Result: " + current);
+                        }
+                        
                         if (rule.right.contains(".")) {
                             return current;
                         }
@@ -86,7 +96,24 @@ public class MarkovAlgorithm {
     }
 
     public static void main(String[] args) throws IOException {
-        FileInputStream fis = new FileInputStream(args[0]);
+        boolean verbose = false;
+        String filename = null;
+        
+        // Parse command line arguments
+        for (String arg : args) {
+            if (arg.equals("-v") || arg.equals("--verbose")) {
+                verbose = true;
+            } else {
+                filename = arg;
+            }
+        }
+        
+        if (filename == null) {
+            System.err.println("Usage: java MarkovAlgorithm [--verbose|-v] <filename>");
+            System.exit(1);
+        }
+        
+        FileInputStream fis = new FileInputStream(filename);
         DataInputStream dis = new DataInputStream(fis);
         
         // Read and ignore condition section
@@ -100,7 +127,10 @@ public class MarkovAlgorithm {
         List<Rule> rules = parseRules(rulesSection);
         
         // Apply rules and output result
-        String result = applyRules(input, rules);
-        System.out.println(result);
+        String result = applyRules(input, rules, verbose);
+        
+        if (!verbose) {
+            System.out.println(result);
+        }
     }
 } 
