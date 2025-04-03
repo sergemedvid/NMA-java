@@ -1,15 +1,19 @@
 javac MarkovAlgorithm.java
 rm -f test.res
-echo "input01.nma" > test.res
-java MarkovAlgorithm input01.nma >> test.res
-echo "input02.nma" >> test.res
-java MarkovAlgorithm input02.nma >> test.res
-echo "input03.nma" >> test.res
-java MarkovAlgorithm input03.nma >> test.res
-echo "edge01.nma" >> test.res
-java MarkovAlgorithm edge01.nma >> test.res
-echo "edge02.nma" >> test.res
-java MarkovAlgorithm edge02.nma >> test.res
+rm -f TESTACT.BAT
+
+for file in NMA/*.nma; do
+    # Get just the filename without path and extension
+    filename=$(basename "$file" .nma)
+    # Write to TESTACT.BAT
+    echo "echo $filename" >> TESTACT.BAT
+    echo "CALL AUTOONE $filename" >> TESTACT.BAT
+    # Original test processing
+    echo "$file" >> test.res
+    java MarkovAlgorithm "$file" > OK/$filename.OK
+    unix2dos OK/$filename.OK
+    cat OK/$filename.OK >> test.res
+done
 
 cmp test.res test.ok
 if [ $? -eq 0 ]; then

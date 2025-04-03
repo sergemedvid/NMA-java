@@ -1,16 +1,11 @@
 @echo off
 javac MarkovAlgorithm.java
 del /f test.res
-echo input01.nma > test.res
-java MarkovAlgorithm input01.nma >> test.res
-echo input02.nma >> test.res
-java MarkovAlgorithm input02.nma >> test.res
-echo input03.nma >> test.res
-java MarkovAlgorithm input03.nma >> test.res
-echo edge01.nma >> test.res
-java MarkovAlgorithm edge01.nma >> test.res
-echo edge02.nma >> test.res
-java MarkovAlgorithm edge02.nma >> test.res
+
+for %%f in (NMA\*.nma) do (
+    echo %%f >> test.res
+    java MarkovAlgorithm %%f >> test.res
+)
 
 fc test.res test.ok > nul
 if errorlevel 1 (
