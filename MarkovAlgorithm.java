@@ -87,11 +87,23 @@ public class MarkovAlgorithm {
                                          replacementString + 
                                          current.substring(index + rule.left.length());
                         
-                        if (!newString.equals(current)) {
-                            // Check if the new string would exceed the maximum length
-                            if (newString.length() > MAX_STRING_LENGTH) {
-                                return current;
+                        // Check if the new string would exceed the maximum length
+                        if (newString.length() > MAX_STRING_LENGTH) {
+                            return current;
+                        }
+                        
+                        // For termination rules, we should terminate even if the string doesn't change
+                        if (shouldTerminate) {
+                            current = newString;
+                            if (verbose) {
+                                System.out.println("Applied termination rule: " + rule.left + " -> " + rule.right);
+                                System.out.println("Final result: " + current);
                             }
+                            return current;
+                        }
+                        
+                        // For non-termination rules, only continue if the string changed
+                        if (!newString.equals(current)) {
                             current = newString;
                             changed = true;
                             
@@ -100,9 +112,6 @@ public class MarkovAlgorithm {
                                 System.out.println("Result: " + current);
                             }
                             
-                            if (shouldTerminate) {
-                                return current;
-                            }
                             break;
                         }
                     }
