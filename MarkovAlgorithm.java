@@ -71,11 +71,13 @@ public class MarkovAlgorithm {
             changed = false;
             for (Rule rule : rules) {
                 if (current.contains(rule.left)) {
-                    // Check if the rule has a termination marker
-                    boolean shouldTerminate = rule.right.contains(".");
-                    // If there's a termination marker, remove it for the replacement
+                    // Check if the rule has a termination marker at the start or end
+                    boolean shouldTerminate = rule.right.startsWith(".") || rule.right.endsWith(".");
+                    // If there's a termination marker, remove only the terminating dot
                     String replacementString = shouldTerminate 
-                            ? rule.right.replace(".", "") 
+                            ? (rule.right.startsWith(".") 
+                                ? rule.right.substring(1) 
+                                : rule.right.substring(0, rule.right.length() - 1))
                             : rule.right;
                             
                     // Find the first occurrence of the left pattern
