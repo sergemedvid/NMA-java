@@ -78,24 +78,31 @@ public class MarkovAlgorithm {
                             ? rule.right.replace(".", "") 
                             : rule.right;
                             
-                    String newString = current.replaceFirst(Pattern.quote(rule.left), replacementString);
-                    if (!newString.equals(current)) {
-                        // Check if the new string would exceed the maximum length
-                        if (newString.length() > MAX_STRING_LENGTH) {
-                            return current;
-                        }
-                        current = newString;
-                        changed = true;
+                    // Find the first occurrence of the left pattern
+                    int index = current.indexOf(rule.left);
+                    if (index != -1) {
+                        String newString = current.substring(0, index) + 
+                                         replacementString + 
+                                         current.substring(index + rule.left.length());
                         
-                        if (verbose) {
-                            System.out.println("Applied rule: " + rule.left + " -> " + rule.right);
-                            System.out.println("Result: " + current);
+                        if (!newString.equals(current)) {
+                            // Check if the new string would exceed the maximum length
+                            if (newString.length() > MAX_STRING_LENGTH) {
+                                return current;
+                            }
+                            current = newString;
+                            changed = true;
+                            
+                            if (verbose) {
+                                System.out.println("Applied rule: " + rule.left + " -> " + rule.right);
+                                System.out.println("Result: " + current);
+                            }
+                            
+                            if (shouldTerminate) {
+                                return current;
+                            }
+                            break;
                         }
-                        
-                        if (shouldTerminate) {
-                            return current;
-                        }
-                        break;
                     }
                 }
             }

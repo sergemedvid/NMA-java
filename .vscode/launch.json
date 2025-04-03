@@ -16,8 +16,7 @@
             "name": "MarkovAlgorithm",
             "request": "launch",
             "mainClass": "MarkovAlgorithm",
-            "projectName": "_NAM_f132c175",
-            "args": ["transferIn10.nma"]
+            "args": ["from_10_to_2.nma"]
         }
     ]
 }
