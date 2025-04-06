@@ -58,10 +58,14 @@ public class MarkovAlgorithm {
         return rules;
     }
 
-    private static String applyRules(String input, List<Rule> rules, boolean verbose) {
+    private static String applyRules(String input, List<Rule> rules, boolean verbose, boolean showStats) {
         String current = input;
         boolean changed;
         final int MAX_STRING_LENGTH = 32768;
+        
+        // Statistics counters
+        int ruleChecks = 0;
+        int ruleApplications = 0;
         
         if (verbose) {
             System.out.println("Initial: " + current);
@@ -70,6 +74,7 @@ public class MarkovAlgorithm {
         do {
             changed = false;
             for (Rule rule : rules) {
+                ruleChecks++;
                 if (current.contains(rule.left)) {
                     // Check if the rule has a termination marker at the start or end
                     boolean shouldTerminate = rule.right.startsWith(".") || rule.right.endsWith(".");
@@ -95,9 +100,16 @@ public class MarkovAlgorithm {
                         // For termination rules, we should terminate even if the string doesn't change
                         if (shouldTerminate) {
                             current = newString;
+                            ruleApplications++;
                             if (verbose) {
                                 System.out.println("Applied termination rule: " + rule.left + " -> " + rule.right);
                                 System.out.println("Final result: " + current);
+                            }
+                            // Print statistics before returning
+                            if (showStats) {
+                                System.out.println("Statistics:");
+                                System.out.println("- Total rule checks: " + ruleChecks);
+                                System.out.println("- Rule applications: " + ruleApplications);
                             }
                             return current;
                         }
@@ -106,6 +118,7 @@ public class MarkovAlgorithm {
                         if (!newString.equals(current)) {
                             current = newString;
                             changed = true;
+                            ruleApplications++;
                             
                             if (verbose) {
                                 System.out.println("Applied rule: " + rule.left + " -> " + rule.right);
@@ -119,24 +132,37 @@ public class MarkovAlgorithm {
             }
         } while (changed);
         
+        // Print statistics before returning
+        if (showStats) {
+            System.out.println("Statistics:");
+            System.out.println("- Total rule checks: " + ruleChecks);
+            System.out.println("- Rule applications: " + ruleApplications);
+        }
+        
         return current;
     }
 
     public static void main(String[] args) throws IOException {
         boolean verbose = false;
+        boolean showStats = false;
+        boolean suppressOutput = false;
         String filename = null;
         
         // Parse command line arguments
         for (String arg : args) {
             if (arg.equals("-v") || arg.equals("--verbose")) {
                 verbose = true;
+            } else if (arg.equals("--stats")) {
+                showStats = true;
+            } else if (arg.equals("--no-output")) {
+                suppressOutput = true;
             } else {
                 filename = arg;
             }
         }
         
         if (filename == null) {
-            System.err.println("Usage: java MarkovAlgorithm [--verbose|-v] <filename>");
+            System.err.println("Usage: java MarkovAlgorithm [--verbose|-v] [--stats] [--no-output] <filename>");
             System.exit(1);
         }
         
@@ -154,9 +180,9 @@ public class MarkovAlgorithm {
         List<Rule> rules = parseRules(rulesSection);
         
         // Apply rules and output result
-        String result = applyRules(input, rules, verbose);
+        String result = applyRules(input, rules, verbose, showStats);
         
-        if (!verbose) {
+        if (!verbose && !suppressOutput) {
             System.out.println(result);
         }
     }
